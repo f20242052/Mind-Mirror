@@ -177,14 +177,31 @@ section[data-testid="stSidebar"] .block-container { padding-top: 2rem; }
     border-radius: 12px !important;
     border: 1.5px solid rgba(180,150,220,0.35) !important;
     font-family: 'Inter', sans-serif !important;
-    background: rgba(255,255,255,0.9) !important;
+    background: rgba(255,255,255,0.95) !important;
+    color: #1a1a2e !important;
+}
+.stTextInput > div > div > input::placeholder,
+.stTextArea > div > div > textarea::placeholder {
+    color: #a89bbf !important;
 }
 .stTextArea > div > div > textarea {
     font-family: 'Playfair Display', serif !important;
     font-size: 1rem !important;
     line-height: 1.8 !important;
-    color: #3d2b52 !important;
+    color: #1a1a2e !important;
 }
+/* Force all labels and general text to be dark */
+label, p, .stMarkdown, .stText {
+    color: #1a1a2e !important;
+}
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] span {
+    color: #1a1a2e !important;
+}
+/* Auth heading */
+.auth-tagline { color: #7a6090 !important; }
+.page-subtitle { color: #7a6090 !important; }
+.entry-meta { color: #7a6090 !important; }
 
 /* ── Divider ── */
 hr { border-color: rgba(180,150,220,0.2) !important; }
