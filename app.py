@@ -190,14 +190,6 @@ section[data-testid="stSidebar"] .block-container { padding-top: 2rem; }
     line-height: 1.8 !important;
     color: #1a1a2e !important;
 }
-/* Force all labels and general text to be dark */
-label, p, .stMarkdown, .stText {
-    color: #1a1a2e !important;
-}
-[data-testid="stMarkdownContainer"] p,
-[data-testid="stMarkdownContainer"] span {
-    color: #1a1a2e !important;
-}
 /* Auth heading */
 .auth-tagline { color: #7a6090 !important; }
 .page-subtitle { color: #7a6090 !important; }
