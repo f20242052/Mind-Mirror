@@ -204,12 +204,17 @@ def show_auth():
     # Language picker even before login
     lang_col1, lang_col2, lang_col3 = st.columns([3, 1, 3])
     with lang_col2:
+        prev_lang = st.session_state.get("language", "English")
         lang = st.selectbox(
             "🌐",
             LANGUAGES,
+            index=LANGUAGES.index(prev_lang),
             key="language",
             label_visibility="collapsed",
         )
+        if lang != prev_lang:
+            st.session_state.language = lang
+            st.rerun()
 
     col1, col2, col3 = st.columns([1, 1.4, 1])
     with col2:
@@ -277,12 +282,16 @@ def show_sidebar():
 
         # Language selector
         st.divider()
+        prev_lang = st.session_state.get("language", "English")
         lang = st.selectbox(
             "🌐 Language",
             LANGUAGES,
-            index=LANGUAGES.index(st.session_state.get("language", "English")),
+            index=LANGUAGES.index(prev_lang),
             key="language",
         )
+        if lang != prev_lang:
+            st.session_state.language = lang
+            st.rerun()
 
         st.divider()
 
