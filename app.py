@@ -137,15 +137,20 @@ def mood_pill(mood: str) -> str:
 def show_ai_settings():
     """Sidebar AI provider configuration."""
     with st.sidebar.expander("🤖 AI Settings", expanded=False):
+        prev_provider = st.session_state.get("ai_provider", PROVIDER_OLLAMA)
         provider = st.selectbox(
             "Provider",
             ALL_PROVIDERS,
-            index=ALL_PROVIDERS.index(
-                st.session_state.get("ai_provider", PROVIDER_OLLAMA)
-            ),
+            index=ALL_PROVIDERS.index(prev_provider),
             key="ai_provider",
             help="Ollama runs locally on your machine. Others require an API key.",
         )
+
+        # Auto-fill model and URL when provider changes
+        if provider != prev_provider:
+            st.session_state.ai_model = DEFAULT_MODELS.get(provider, "llama3")
+            st.session_state.ai_base_url = DEFAULT_URLS.get(provider, "http://localhost:11434")
+            st.rerun()
 
         # Model input
         default_model = DEFAULT_MODELS.get(provider, "llama3")
