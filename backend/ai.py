@@ -100,19 +100,22 @@ def _chat_openai_compatible(
 # ── Provider config helper ────────────────────────────────────────────────────
 def get_provider_config(session_state: dict) -> dict:
     """Extract provider config from Streamlit session_state."""
+    provider = session_state.get("ai_provider", PROVIDER_OLLAMA)
+    model = session_state.get("ai_model") or DEFAULT_MODELS.get(provider, "llama3")
+    base_url = session_state.get("ai_base_url") or DEFAULT_URLS.get(
+        provider, "http://localhost:11434"
+    )
     return {
-        "provider": session_state.get("ai_provider", PROVIDER_OLLAMA),
-        "model": session_state.get("ai_model") or DEFAULT_MODELS.get(
-            session_state.get("ai_provider", PROVIDER_OLLAMA), "llama3"
-        ),
+        "provider": provider,
+        "model": model,
         "api_key": session_state.get("ai_api_key", ""),
-        "base_url": session_state.get("ai_base_url") or DEFAULT_URLS.get(
-            session_state.get("ai_provider", PROVIDER_OLLAMA), "http://localhost:11434"
-        ),
+        "base_url": base_url,
     }
 
 
-def check_ollama_connection(base_url: str = "http://localhost:11434") -> tuple[bool, str]:
+def check_ollama_connection(
+    base_url: str = "http://localhost:11434",
+) -> tuple[bool, str]:
     """Check if Ollama is running and return available models."""
     try:
         resp = requests.get(f"{base_url.rstrip('/')}/api/tags", timeout=5)
@@ -121,7 +124,7 @@ def check_ollama_connection(base_url: str = "http://localhost:11434") -> tuple[b
         return True, models
     except requests.exceptions.ConnectionError:
         return False, []
-    except Exception as e:
+    except Exception:
         return False, []
 
 
