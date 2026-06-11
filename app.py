@@ -3,8 +3,12 @@ from datetime import datetime
 
 from backend.config import MOODS, MOOD_COLORS
 from backend.ai import (
-    ALL_PROVIDERS, DEFAULT_MODELS, DEFAULT_URLS,
-    PROVIDER_OLLAMA, get_provider_config, check_ollama_connection
+    ALL_PROVIDERS,
+    DEFAULT_MODELS,
+    DEFAULT_URLS,
+    PROVIDER_OLLAMA,
+    get_provider_config,
+    check_ollama_connection,
 )
 import backend.auth as auth
 import backend.diary as diary
@@ -20,7 +24,8 @@ st.set_page_config(
 )
 
 # ── Global CSS ────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
@@ -59,7 +64,9 @@ hr { border-color: rgba(180,150,220,0.2) !important; }
 .ai-badge { display: inline-block; background: rgba(155,126,212,0.15); color: #6b4d90; border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.75rem; border: 1px solid rgba(155,126,212,0.3); }
 .provider-card { background: rgba(255,255,255,0.9); border-radius: 14px; padding: 1rem 1.2rem; margin: 0.5rem 0; border: 1.5px solid rgba(180,150,220,0.3); }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ── Translation helpers ───────────────────────────────────────────────────────
@@ -158,7 +165,9 @@ def show_ai_settings():
                             st.success("✅ Ollama is running!")
                             st.caption("Available models: " + ", ".join(models[:5]))
                         else:
-                            st.warning("Ollama running but no models found. Run: `ollama pull llama3`")
+                            st.warning(
+                                "Ollama running but no models found. Run: `ollama pull llama3`"
+                            )
                     else:
                         st.error(
                             "❌ Ollama not found. "
@@ -186,8 +195,11 @@ def show_auth():
     with lang_col2:
         prev_lang = st.session_state.get("language", "English")
         lang = st.selectbox(
-            "🌐", LANGUAGES, index=LANGUAGES.index(prev_lang),
-            key="language", label_visibility="collapsed",
+            "🌐",
+            LANGUAGES,
+            index=LANGUAGES.index(prev_lang),
+            key="language",
+            label_visibility="collapsed",
         )
         if lang != prev_lang:
             st.session_state.language = lang
@@ -196,7 +208,9 @@ def show_auth():
 
     col1, col2, col3 = st.columns([1, 1.4, 1])
     with col2:
-        st.markdown('<div class="auth-logo">🪞 MindMirror</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="auth-logo">🪞 MindMirror</div>', unsafe_allow_html=True
+        )
         st.markdown(
             f'<div class="auth-tagline">{t("Your private space to reflect, grow, and understand yourself.")}</div>',
             unsafe_allow_html=True,
@@ -208,8 +222,12 @@ def show_auth():
             with st.form("login_form"):
                 st.markdown(f"#### {t('Welcome back')}")
                 email = st.text_input(t("Email"), placeholder="you@example.com")
-                password = st.text_input(t("Password"), type="password", placeholder="••••••••")
-                submitted = st.form_submit_button(t("Sign In"), type="primary", use_container_width=True)
+                password = st.text_input(
+                    t("Password"), type="password", placeholder="••••••••"
+                )
+                submitted = st.form_submit_button(
+                    t("Sign In"), type="primary", use_container_width=True
+                )
                 if submitted:
                     if not email or not password:
                         st.error(t("Please fill in all fields."))
@@ -218,7 +236,9 @@ def show_auth():
                             try:
                                 resp = auth.login(email, password)
                                 st.session_state.user = resp.user
-                                st.session_state.access_token = resp.session.access_token
+                                st.session_state.access_token = (
+                                    resp.session.access_token
+                                )
                                 st.session_state.page = "home"
                                 st.rerun()
                             except Exception as e:
@@ -227,10 +247,24 @@ def show_auth():
         with tab_register:
             with st.form("register_form"):
                 st.markdown(f"#### {t('Start your journey')}")
-                email = st.text_input(t("Email"), placeholder="you@example.com", key="reg_email")
-                password = st.text_input(t("Password"), type="password", placeholder=t("Min 6 characters"), key="reg_pass")
-                confirm = st.text_input(t("Confirm password"), type="password", placeholder="••••••••", key="reg_confirm")
-                submitted = st.form_submit_button(t("Create Account"), type="primary", use_container_width=True)
+                email = st.text_input(
+                    t("Email"), placeholder="you@example.com", key="reg_email"
+                )
+                password = st.text_input(
+                    t("Password"),
+                    type="password",
+                    placeholder=t("Min 6 characters"),
+                    key="reg_pass",
+                )
+                confirm = st.text_input(
+                    t("Confirm password"),
+                    type="password",
+                    placeholder="••••••••",
+                    key="reg_confirm",
+                )
+                submitted = st.form_submit_button(
+                    t("Create Account"), type="primary", use_container_width=True
+                )
                 if submitted:
                     if not email or not password or not confirm:
                         st.error(t("Please fill in all fields."))
@@ -242,7 +276,11 @@ def show_auth():
                         with st.spinner(t("Creating your account...")):
                             try:
                                 auth.register(email, password)
-                                st.success(t("Account created! Check your email to confirm, then sign in."))
+                                st.success(
+                                    t(
+                                        "Account created! Check your email to confirm, then sign in."
+                                    )
+                                )
                             except Exception as e:
                                 st.error(f"{t('Registration failed')}: {e}")
 
@@ -261,8 +299,10 @@ def show_sidebar():
         # Language
         prev_lang = st.session_state.get("language", "English")
         lang = st.selectbox(
-            "🌐 Language", LANGUAGES,
-            index=LANGUAGES.index(prev_lang), key="language",
+            "🌐 Language",
+            LANGUAGES,
+            index=LANGUAGES.index(prev_lang),
+            key="language",
         )
         if lang != prev_lang:
             st.session_state.language = lang
@@ -306,12 +346,13 @@ def show_home():
     user = current_user()
     hour = datetime.now().hour
     greeting = (
-        t("Good morning") if hour < 12
-        else t("Good afternoon") if hour < 17
-        else t("Good evening")
+        t("Good morning")
+        if hour < 12
+        else t("Good afternoon") if hour < 17 else t("Good evening")
     )
     st.markdown(f'<div class="page-title">{greeting} 🌸</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="page-subtitle">{t("What\'s on your mind today?")}</div>', unsafe_allow_html=True)
+    subtitle = t("What's on your mind today?")
+    st.markdown(f'<div class="page-subtitle">{subtitle}</div>', unsafe_allow_html=True)
 
     if st.button(t("✍️ Write Today's Entry"), type="primary"):
         st.session_state.page = "new_entry"
@@ -321,13 +362,16 @@ def show_home():
     entries = diary.get_entries(current_token(), user.id)
 
     if not entries:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="mirror-card" style="text-align:center;padding:3rem;">
             <div style="font-size:3rem;">📖</div>
             <div style="font-family:'Playfair Display',serif;font-size:1.3rem;color:#4a3060;margin:0.8rem 0 0.4rem;">{t("Your journal is empty")}</div>
             <div style="color:#9b84b0;font-size:0.9rem;">{t("Write your first entry and let AI help you reflect.")}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
         return
 
     st.markdown(f"#### {t('📝 Recent Entries')}")
@@ -345,8 +389,13 @@ def show_new_entry():
     editing = st.session_state.get("editing_entry")
     title_label = t("Edit Entry") if editing else t("New Entry")
 
-    st.markdown(f'<div class="page-title">✍️ {title_label}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="page-subtitle">{t("Write freely. AI will help you reflect.")}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="page-title">✍️ {title_label}</div>', unsafe_allow_html=True
+    )
+    st.markdown(
+        f'<div class="page-subtitle">{t("Write freely. AI will help you reflect.")}</div>',
+        unsafe_allow_html=True,
+    )
 
     # Show active provider
     provider = st.session_state.get("ai_provider", PROVIDER_OLLAMA)
@@ -360,14 +409,25 @@ def show_new_entry():
     defaults = editing or {}
 
     with st.form("entry_form", clear_on_submit=False):
-        title = st.text_input(t("Title"), value=defaults.get("title", ""), placeholder=t("Give today a title..."))
+        title = st.text_input(
+            t("Title"),
+            value=defaults.get("title", ""),
+            placeholder=t("Give today a title..."),
+        )
         mood = st.selectbox(
-            t("How are you feeling?"), MOODS,
-            index=MOODS.index(defaults.get("mood", MOODS[0])) if defaults.get("mood") in MOODS else 0,
+            t("How are you feeling?"),
+            MOODS,
+            index=(
+                MOODS.index(defaults.get("mood", MOODS[0]))
+                if defaults.get("mood") in MOODS
+                else 0
+            ),
         )
         content = st.text_area(
-            t("Your entry"), value=defaults.get("content", ""),
-            placeholder=t("Start writing... let your thoughts flow."), height=280,
+            t("Your entry"),
+            value=defaults.get("content", ""),
+            placeholder=t("Start writing... let your thoughts flow."),
+            height=280,
         )
         col1, col2 = st.columns(2)
         with col1:
@@ -375,7 +435,8 @@ def show_new_entry():
         with col2:
             submitted = st.form_submit_button(
                 t("💾 Save Entry") if editing else t("✨ Save & Reflect"),
-                type="primary", use_container_width=True,
+                type="primary",
+                use_container_width=True,
             )
 
         if submitted:
@@ -388,18 +449,31 @@ def show_new_entry():
                     with st.spinner(f"🤖 {provider} {t('is reading your entry...')}"):
                         try:
                             cfg = get_provider_config(st.session_state)
-                            insights = ai.generate_all_insights(title, content, mood, cfg)
+                            insights = ai.generate_all_insights(
+                                title, content, mood, cfg
+                            )
                         except Exception as e:
                             st.warning(f"{t('AI insights unavailable')}: {e}")
                 try:
                     if editing:
-                        updates = {"title": title, "content": content, "mood": mood, **insights}
-                        diary.update_entry(current_token(), editing["id"], user.id, updates)
+                        updates = {
+                            "title": title,
+                            "content": content,
+                            "mood": mood,
+                            **insights,
+                        }
+                        diary.update_entry(
+                            current_token(), editing["id"], user.id, updates
+                        )
                         st.success(t("Entry updated! ✨"))
                         st.session_state.pop("editing_entry", None)
                     else:
                         diary.create_entry(
-                            current_token(), user.id, title, content, mood,
+                            current_token(),
+                            user.id,
+                            title,
+                            content,
+                            mood,
                             ai_summary=insights.get("ai_summary"),
                             reflection_prompt=insights.get("reflection_prompt"),
                             themes=insights.get("themes", []),
@@ -412,12 +486,15 @@ def show_new_entry():
 
     if mood:
         color = MOOD_COLORS.get(mood, "#C9B1D9")
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style="margin-top:1rem;display:flex;align-items:center;gap:0.6rem;">
             <div style="width:14px;height:14px;border-radius:50%;background:{color};box-shadow:0 0 8px {color};"></div>
             <span style="font-size:0.85rem;color:#9b84b0;">{t("Currently feeling")} {mood}</span>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 
 # ── Journal page ──────────────────────────────────────────────────────────────
@@ -427,8 +504,13 @@ def show_journal():
         _show_entry_detail(viewing)
         return
 
-    st.markdown(f'<div class="page-title">📖 {t("My Journal")}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="page-subtitle">{t("All your reflections, in one place.")}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="page-title">📖 {t("My Journal")}</div>', unsafe_allow_html=True
+    )
+    st.markdown(
+        f'<div class="page-subtitle">{t("All your reflections, in one place.")}</div>',
+        unsafe_allow_html=True,
+    )
 
     user = current_user()
     entries = diary.get_entries(current_token(), user.id)
@@ -437,7 +519,9 @@ def show_journal():
         st.info(t("No entries yet. Write your first one! ✨"))
         return
 
-    mood_filter = st.selectbox(t("Filter by mood"), [t("All moods")] + MOODS, key="mood_filter")
+    mood_filter = st.selectbox(
+        t("Filter by mood"), [t("All moods")] + MOODS, key="mood_filter"
+    )
     if mood_filter not in (t("All moods"), "All moods"):
         entries = [e for e in entries if e.get("mood") == mood_filter]
 
@@ -451,38 +535,53 @@ def show_journal():
 
 def _render_entry_card(entry: dict, compact: bool = False):
     date_str = datetime.fromisoformat(entry["created_at"]).strftime("%B %d, %Y")
-    preview = entry["content"][:180] + "..." if len(entry["content"]) > 180 else entry["content"]
+    preview = (
+        entry["content"][:180] + "..."
+        if len(entry["content"]) > 180
+        else entry["content"]
+    )
     mood = entry.get("mood", "")
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="mirror-card">
         {mood_pill(mood)}
         <div class="entry-title">{entry['title']}</div>
         <div class="entry-meta">📅 {date_str}</div>
         <div class="entry-preview">{preview}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     if not compact:
         col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
-            if st.button(t("📖 Read"), key=f"view_{entry['id']}", use_container_width=True):
+            if st.button(
+                t("📖 Read"), key=f"view_{entry['id']}", use_container_width=True
+            ):
                 st.session_state.viewing_entry = entry
                 st.rerun()
         with col2:
-            if st.button(t("✏️ Edit"), key=f"edit_{entry['id']}", use_container_width=True):
+            if st.button(
+                t("✏️ Edit"), key=f"edit_{entry['id']}", use_container_width=True
+            ):
                 st.session_state.editing_entry = entry
                 st.session_state.page = "new_entry"
                 st.rerun()
         with col3:
-            if st.button(t("🗑️ Delete"), key=f"del_{entry['id']}", use_container_width=True):
+            if st.button(
+                t("🗑️ Delete"), key=f"del_{entry['id']}", use_container_width=True
+            ):
                 st.session_state[f"confirm_delete_{entry['id']}"] = True
 
         if st.session_state.get(f"confirm_delete_{entry['id']}"):
             st.warning(t("Are you sure you want to delete this entry?"))
             cc1, cc2 = st.columns(2)
             with cc1:
-                if st.button(t("Yes, delete"), key=f"yes_{entry['id']}", type="primary"):
+                if st.button(
+                    t("Yes, delete"), key=f"yes_{entry['id']}", type="primary"
+                ):
                     diary.delete_entry(current_token(), entry["id"], current_user().id)
                     st.session_state.pop(f"confirm_delete_{entry['id']}", None)
                     st.success(t("Entry deleted."))
@@ -504,10 +603,13 @@ def _show_entry_detail(entry: dict):
         st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
-    date_str = datetime.fromisoformat(entry["created_at"]).strftime("%B %d, %Y · %I:%M %p")
+    date_str = datetime.fromisoformat(entry["created_at"]).strftime(
+        "%B %d, %Y · %I:%M %p"
+    )
     mood = entry.get("mood", "")
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="mirror-card">
         {mood_pill(mood)}
         <div class="page-title">{entry['title']}</div>
@@ -516,34 +618,49 @@ def _show_entry_detail(entry: dict):
             {entry['content']}
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     themes = entry.get("themes") or []
     if themes:
         tags = "".join(f'<span class="theme-tag">#{theme}</span>' for theme in themes)
-        st.markdown(f"<div style='margin-bottom:0.5rem;'>{tags}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div style='margin-bottom:0.5rem;'>{tags}</div>", unsafe_allow_html=True
+        )
 
     if entry.get("ai_summary"):
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="insight-box">
             <strong>✨ {t('AI Summary')}</strong><br><br>
             {entry['ai_summary']}
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     if entry.get("reflection_prompt"):
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="reflection-box">
             <strong>💭 {t('Reflection Prompt')}</strong><br><br>
             {entry['reflection_prompt']}
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 
 # ── Analytics page ────────────────────────────────────────────────────────────
 def show_analytics():
-    st.markdown(f'<div class="page-title">📊 {t("Insights")}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="page-subtitle">{t("Patterns in your emotional landscape.")}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="page-title">📊 {t("Insights")}</div>', unsafe_allow_html=True
+    )
+    st.markdown(
+        f'<div class="page-subtitle">{t("Patterns in your emotional landscape.")}</div>',
+        unsafe_allow_html=True,
+    )
 
     user = current_user()
     entries = diary.get_entries(current_token(), user.id)
@@ -553,16 +670,23 @@ def show_analytics():
     col1, col2, col3, col4 = st.columns(4)
     for col, (num, label) in zip(
         [col1, col2, col3, col4],
-        [(stats["total"], t("Total Entries")), (f"{stats['streak']}d", t("Current Streak")),
-         (stats["top_mood"], t("Top Mood")), (f"{stats['avg_words']}w", t("Avg Words"))],
+        [
+            (stats["total"], t("Total Entries")),
+            (f"{stats['streak']}d", t("Current Streak")),
+            (stats["top_mood"], t("Top Mood")),
+            (f"{stats['avg_words']}w", t("Avg Words")),
+        ],
     ):
         with col:
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div class="stat-card">
                 <div class="stat-number">{num}</div>
                 <div class="stat-label">{label}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
