@@ -66,3 +66,16 @@ def generate_all_insights(title: str, content: str, mood: str) -> dict:
         "reflection_prompt": reflection,
         "themes": themes,
     }
+
+
+def translate_text(text: str, language: str) -> str:
+    """Translate any UI text to the target language using Groq."""
+    if language == "English":
+        return text
+    system = (
+        f"You are a translator. Translate the given text to {language}. "
+        "Return ONLY the translated text, nothing else. "
+        "Keep emojis, punctuation marks, and special characters exactly as they are. "
+        "Do not add any explanation or extra words."
+    )
+    return _chat(system, text, max_tokens=300)
