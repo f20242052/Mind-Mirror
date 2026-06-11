@@ -166,7 +166,7 @@ LANGUAGES = ["English", "Hindi", "Telugu"]
 def t(text: str) -> str:
     """Translate text to the currently selected language."""
     lang = st.session_state.get("language", "English")
-    if lang == "English":
+    if not lang or lang == "English":
         return text
 
     # Use session_state as cache so it survives reruns
@@ -179,10 +179,24 @@ def t(text: str) -> str:
 
     try:
         result = ai.translate_text(text, lang)
-        st.session_state.translation_cache[cache_key] = result
-        return result
-    except Exception:
+        if result and result.strip():
+            st.session_state.translation_cache[cache_key] = result
+            return result
+        return text
+    except Exception as e:
+        st.session_state[f"translate_error"] = str(e)
         return text  # fall back to English if translation fails
+
+
+def show_translation_debug():
+    """Show debug info - remove after fixing."""
+    lang = st.session_state.get("language", "English")
+    cache = st.session_state.get("translation_cache", {})
+    err = st.session_state.get("translate_error", None)
+    st.sidebar.caption(f"🔍 Lang: {lang} | Cache: {len(cache)} | Error: {err}")
+    if lang != "English":
+        test = t("Good morning")
+        st.sidebar.caption(f"Test: 'Good morning' → '{test}'"  )
 
 
 # ── Session helpers ───────────────────────────────────────────────────────────
@@ -299,6 +313,7 @@ def show_sidebar():
             st.session_state.translation_cache = {}  # clear old translations
             st.rerun()
 
+        show_translation_debug()
         st.divider()
 
         pages = {
