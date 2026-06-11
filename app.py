@@ -162,11 +162,8 @@ hr { border-color: rgba(180,150,220,0.2) !important; }
 # ── Translation helpers ───────────────────────────────────────────────────────
 LANGUAGES = ["English", "Hindi", "Telugu"]
 
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def _cached_translate(text: str, language: str) -> str:
-    """Cache translations for 1 hour to avoid repeated Groq calls."""
-    return ai.translate_text(text, language)
+# In-memory translation cache: {(text, language): translated_text}
+_translation_cache: dict = {}
 
 
 def t(text: str) -> str:
@@ -174,8 +171,13 @@ def t(text: str) -> str:
     lang = st.session_state.get("language", "English")
     if lang == "English":
         return text
+    cache_key = (text, lang)
+    if cache_key in _translation_cache:
+        return _translation_cache[cache_key]
     try:
-        return _cached_translate(text, lang)
+        result = ai.translate_text(text, lang)
+        _translation_cache[cache_key] = result
+        return result
     except Exception:
         return text  # fall back to English if translation fails
 
