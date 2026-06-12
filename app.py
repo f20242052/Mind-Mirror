@@ -202,6 +202,13 @@ def show_ai_settings():
                             "Install from [ollama.com](https://ollama.com) and run `ollama serve`"
                         )
 
+        # Apply button
+        if st.button("✅ Apply Settings", use_container_width=True, type="primary"):
+            st.session_state.ai_provider_prev = provider
+            st.session_state.ai_model = st.session_state.get("ai_model") or DEFAULT_MODELS[provider]
+            st.session_state.ai_base_url = st.session_state.get("ai_base_url") or DEFAULT_URLS[provider]
+            st.success("Settings saved!")
+
         # Provider badge
         badge_color = {
             PROVIDER_OLLAMA: "#4caf50",
