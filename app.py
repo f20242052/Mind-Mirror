@@ -176,14 +176,16 @@ def show_ai_settings():
 
         # API key — only for non-Ollama
         if provider != PROVIDER_OLLAMA:
-            st.text_input(
+            api_key_input = st.text_input(
                 "API Key (BYOK)",
                 value=st.session_state.get("ai_api_key", ""),
-                key="ai_api_key",
                 type="password",
                 placeholder="Paste your API key here",
                 help="Your key is stored only in your session and never saved.",
             )
+            # Persist key explicitly so it survives reruns
+            if api_key_input:
+                st.session_state.ai_api_key = api_key_input
         else:
             # Ollama connection check
             base_url = st.session_state.get("ai_base_url") or default_url
