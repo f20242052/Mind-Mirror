@@ -317,10 +317,10 @@ def show_sidebar():
 
         # Navigation
         pages = {
-            t("🏠 Home"): "home",
-            t("✍️ New Entry"): "new_entry",
-            t("📖 My Journal"): "journal",
-            t("📊 Insights"): "analytics",
+            t("Home"): "home",
+            t("New Entry"): "new_entry",
+            t("My Journal"): "journal",
+            t("Insights"): "analytics",
         }
         for label, page_key in pages.items():
             if st.button(label, key=f"nav_{page_key}", use_container_width=True):
@@ -358,7 +358,7 @@ def show_home():
     subtitle = t("What's on your mind today?")
     st.markdown(f'<div class="page-subtitle">{subtitle}</div>', unsafe_allow_html=True)
 
-    if st.button(t("✍️ Write Today's Entry"), type="primary"):
+    if st.button(t("Write Today's Entry"), type="primary"):
         st.session_state.page = "new_entry"
         st.rerun()
 
@@ -375,7 +375,7 @@ def show_home():
         """, unsafe_allow_html=True)
         return
 
-    st.markdown(f"#### {t('📝 Recent Entries')}")
+    st.markdown(f"#### {t('Recent Entries')}")
     for entry in entries[:3]:
         _render_entry_card(entry, compact=True)
 
@@ -416,10 +416,10 @@ def show_new_entry():
         )
         col1, col2 = st.columns(2)
         with col1:
-            ai_on = st.checkbox(t("✨ Generate AI insights"), value=True)
+            ai_on = st.checkbox(t("Generate AI insights"), value=True)
         with col2:
             submitted = st.form_submit_button(
-                t("💾 Save Entry") if editing else t("✨ Save & Reflect"),
+                t("💾 Save Entry") if editing else t("Save & Reflect"),
                 type="primary", use_container_width=True,
             )
 
@@ -430,7 +430,7 @@ def show_new_entry():
                 user = current_user()
                 insights = {}
                 if ai_on:
-                    with st.spinner(f"🤖 {provider} {t('is reading your entry...')}"):
+                    with st.spinner(f"{provider} {t('is reading your entry...')}"):
                         try:
                             cfg = get_provider_config(st.session_state)
                             insights = ai.generate_all_insights(title, content, mood, cfg)
@@ -440,7 +440,7 @@ def show_new_entry():
                     if editing:
                         updates = {"title": title, "content": content, "mood": mood, **insights}
                         diary.update_entry(current_token(), editing["id"], user.id, updates)
-                        st.success(t("Entry updated! ✨"))
+                        st.success(t("Entry updated!"))
                         st.session_state.pop("editing_entry", None)
                     else:
                         diary.create_entry(
@@ -449,7 +449,7 @@ def show_new_entry():
                             reflection_prompt=insights.get("reflection_prompt"),
                             themes=insights.get("themes", []),
                         )
-                        st.success(t("Entry saved! 🌸"))
+                        st.success(t("Entry saved!"))
                     st.session_state.page = "journal"
                     st.rerun()
                 except Exception as e:
@@ -472,14 +472,14 @@ def show_journal():
         _show_entry_detail(viewing)
         return
 
-    st.markdown(f'<div class="page-title">📖 {t("My Journal")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="page-title"> {t("My Journal")}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="page-subtitle">{t("All your reflections, in one place.")}</div>', unsafe_allow_html=True)
 
     user = current_user()
     entries = diary.get_entries(current_token(), user.id)
 
     if not entries:
-        st.info(t("No entries yet. Write your first one! ✨"))
+        st.info(t("No entries yet. Write your first one!"))
         return
 
     mood_filter = st.selectbox(t("Filter by mood"), [t("All moods")] + MOODS, key="mood_filter")
@@ -503,7 +503,7 @@ def _render_entry_card(entry: dict, compact: bool = False):
     <div class="mirror-card">
         {mood_pill(mood)}
         <div class="entry-title">{entry['title']}</div>
-        <div class="entry-meta">📅 {date_str}</div>
+        <div class="entry-meta">{date_str}</div>
         <div class="entry-preview">{preview}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -515,7 +515,7 @@ def _render_entry_card(entry: dict, compact: bool = False):
                 st.session_state.viewing_entry = entry
                 st.rerun()
         with col2:
-            if st.button(t("✏️ Edit"), key=f"edit_{entry['id']}", use_container_width=True):
+            if st.button(t("Edit"), key=f"edit_{entry['id']}", use_container_width=True):
                 st.session_state.editing_entry = entry
                 st.session_state.page = "new_entry"
                 st.rerun()
@@ -556,7 +556,7 @@ def _show_entry_detail(entry: dict):
     <div class="mirror-card">
         {mood_pill(mood)}
         <div class="page-title">{entry['title']}</div>
-        <div class="entry-meta">📅 {date_str}</div>
+        <div class="entry-meta">{date_str}</div>
         <div style="font-family:'Playfair Display',serif;font-size:1.05rem;color:#3d2b52;line-height:1.9;white-space:pre-wrap;margin-top:1rem;">
             {entry['content']}
         </div>
@@ -571,7 +571,7 @@ def _show_entry_detail(entry: dict):
     if entry.get("ai_summary"):
         st.markdown(f"""
         <div class="insight-box">
-            <strong>✨ {t('AI Summary')}</strong><br><br>
+            <strong> {t('AI Summary')}</strong><br><br>
             {entry['ai_summary']}
         </div>
         """, unsafe_allow_html=True)
@@ -579,7 +579,7 @@ def _show_entry_detail(entry: dict):
     if entry.get("reflection_prompt"):
         st.markdown(f"""
         <div class="reflection-box">
-            <strong>💭 {t('Reflection Prompt')}</strong><br><br>
+            <strong> {t('Reflection Prompt')}</strong><br><br>
             {entry['reflection_prompt']}
         </div>
         """, unsafe_allow_html=True)
@@ -587,7 +587,7 @@ def _show_entry_detail(entry: dict):
 
 # ── Analytics page ────────────────────────────────────────────────────────────
 def show_analytics():
-    st.markdown(f'<div class="page-title">📊 {t("Insights")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="page-title"> {t("Insights")}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="page-subtitle">{t("Patterns in your emotional landscape.")}</div>', unsafe_allow_html=True)
 
     user = current_user()
@@ -612,7 +612,7 @@ def show_analytics():
     st.markdown("<br>", unsafe_allow_html=True)
 
     if df.empty:
-        st.info(t("Write a few entries to unlock your mood analytics! 🌱"))
+        st.info(t("Write a few entries to unlock your mood analytics!"))
         return
 
     col_a, col_b = st.columns(2)
